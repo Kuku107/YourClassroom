@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "498600545281",
+    "project_id": "demoyourclassroom",
+    "storage_bucket": "demoyourclassroom.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:498600545281:android:9dec234e0c6659865ac400",
+        "android_client_info": {
+          "package_name": "android.example.yourclassroom"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBd3VqbI8VrbbDWX6w7mxCVH15espbplXU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
