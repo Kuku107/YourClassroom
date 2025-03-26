@@ -6,12 +6,11 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.database.Cursor;
 import android.example.yourclassroom.adapter.FileAdapter;
-import android.example.yourclassroom.model.File;
+import android.example.yourclassroom.model.Attachment;
 import android.example.yourclassroom.utils.EncodeDecodeFile;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
-import android.util.Base64;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -20,26 +19,13 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class AddExerciseActivity extends AppCompatActivity implements FileAdapter.OnItemClickListener {
     private static final int PICK_FILE_REQUEST = 1;
@@ -141,14 +127,14 @@ public class AddExerciseActivity extends AppCompatActivity implements FileAdapte
             if (fileUri != null) {
                 String fileName = getFileName(fileUri);
                 String dataFile = EncodeDecodeFile.encode(this, fileUri);
-                fileAdapter.addFile(new File(fileUri, fileName, dataFile));
+                fileAdapter.addFile(new Attachment(fileUri, fileName, dataFile));
                 Toast.makeText(this, dataFile, Toast.LENGTH_SHORT).show();
             }
         }
     }
 
     @Override
-    public void onItemClick(File file) {
+    public void onItemClick(Attachment file) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setDataAndType(file.getUri(), "application/pdf");
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);

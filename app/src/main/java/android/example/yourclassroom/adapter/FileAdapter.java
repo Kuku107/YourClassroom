@@ -1,9 +1,8 @@
 package android.example.yourclassroom.adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.example.yourclassroom.R;
-import android.example.yourclassroom.model.File;
+import android.example.yourclassroom.model.Attachment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,17 +12,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.Firebase;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileHolder>{
 
-    private List<File> fileList;
+    private List<Attachment> fileList;
     private Context context;
 
     private OnItemClickListener listener;
@@ -33,7 +31,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileHolder>{
         this.context = context;
     }
 
-    public FileAdapter(List<File> fileList) {
+    public FileAdapter(List<Attachment> fileList) {
         this.fileList = fileList;
     }
 
@@ -50,7 +48,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileHolder>{
 
     @Override
     public void onBindViewHolder(@NonNull FileHolder holder, int position) {
-        File file = fileList.get(position);
+        Attachment file = fileList.get(position);
 
         holder.tvFileName.setText(file.getName());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -79,7 +77,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileHolder>{
         return 0;
     }
 
-    public void addFile(File file) {
+    public void addFile(Attachment file) {
         fileList.add(file);
         notifyDataSetChanged();
     }
@@ -88,12 +86,10 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileHolder>{
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://demoyourclassroom-default-rtdb.asia-southeast1.firebasedatabase.app");
         DatabaseReference myRef = database.getReference("files");
 
-        for (File file : fileList) {
+        for (Attachment file : fileList) {
             String key = myRef.push().getKey();
-            HashMap<String, Object> data = new HashMap<>();
-            data.put("filename", file.getName());
-            data.put("data", file.getData());
-            myRef.child(key).setValue(data);
+            File fileFire = new File(file.getName(), file.getData());
+            myRef.child(key).setValue(fileFire);
         }
     }
 
@@ -109,6 +105,6 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileHolder>{
     }
 
     public interface OnItemClickListener {
-        void onItemClick(File file);
+        void onItemClick(Attachment file);
     }
 }
