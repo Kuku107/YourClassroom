@@ -47,7 +47,7 @@
                 android:textSize="20sp" />
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/btn_assign_exercise"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dp"
@@ -143,7 +143,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_list_item_file"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>

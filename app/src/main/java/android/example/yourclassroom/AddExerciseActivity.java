@@ -2,6 +2,7 @@ package android.example.yourclassroom;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.database.Cursor;
 import android.example.yourclassroom.adapter.FileAdapter;
@@ -11,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.util.Base64;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,11 +41,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class AddExerciseActivity extends AppCompatActivity {
+public class AddExerciseActivity extends AppCompatActivity implements FileAdapter.OnItemClickListener {
     private static final int PICK_FILE_REQUEST = 1;
     private TextView tvDate;
 
     private RecyclerView rvListFile;
+    private Button btnAssign;
     private final Calendar calendar = Calendar.getInstance();
     private FileAdapter fileAdapter;
 
@@ -58,21 +61,27 @@ public class AddExerciseActivity extends AppCompatActivity {
 
         uploadFromLocal = findViewById(R.id.upload_from_local);
         tvDate = findViewById(R.id.tv_date);
+        btnAssign = findViewById(R.id.btn_assign_exercise);
+
         LinearLayout datePickerContainer = findViewById(R.id.datePickerContainer);
         datePickerContainer.setOnClickListener(v -> showDatePickerDialog());
 
         uploadFromLocal.setOnClickListener(v -> openFilePicker());
 
-        List<File> files = List.of(
-                new File("file1", "data1"),
-                new File("file2", "data2"),
-                new File("file3", "data3")
-        );
-        fileAdapter = new FileAdapter(files);
+        fileAdapter = new FileAdapter(this);
+        fileAdapter.setOnItemClickListener(this);
         rvListFile = findViewById(R.id.rv_list_item_file);
         rvListFile.setLayoutManager(new LinearLayoutManager(this));
         rvListFile.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         rvListFile.setAdapter(fileAdapter);
+
+        btnAssign.setOnClickListener(v -> {
+            if (fileAdapter.getItemCount() == 0) {
+                Toast.makeText(this, "Vui lòng chọn ít nhất 1 file", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            fileAdapter.pushDataToFirebase();
+        });
     }
 
     private void showDatePickerDialog() {
@@ -131,10 +140,25 @@ public class AddExerciseActivity extends AppCompatActivity {
             Uri fileUri = data.getData(); // Lấy URI của file
             if (fileUri != null) {
                 String fileName = getFileName(fileUri);
-                String dataFile = EncodeDecodeFile.encode(fileUri);
-                fileAdapter.addFile(new File(fileName, dataFile));
-                Toast.makeText(this, "File " + fileName + " đã được thêm", Toast.LENGTH_SHORT).show();
+                String dataFile = EncodeDecodeFile.encode(this, fileUri);
+                fileAdapter.addFile(new File(fileUri, fileName, dataFile));
+                Toast.makeText(this, dataFile, Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    @Override
+    public void onItemClick(File file) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(file.getUri(), "application/pdf");
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, "No PDF viewer app found. Please install one.",
+                    Toast.LENGTH_SHORT).show();
         }
     }
 }
